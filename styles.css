@@ -583,6 +583,7 @@ h1 {
   overscroll-behavior-x: contain;
   -webkit-overflow-scrolling: touch;
   scroll-behavior: auto;
+  scroll-snap-type: x mandatory;
   touch-action: auto;
   user-select: none;
 }
@@ -596,6 +597,8 @@ h1 {
   width: clamp(340px, calc((100% - (var(--project-gap) * 2)) / 2.35), 520px);
   aspect-ratio: 461.25 / 446;
   object-fit: cover;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
 }
 
 .project-images.is-dragging {

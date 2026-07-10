@@ -358,6 +358,28 @@
 
       sliders.forEach((slider) => {
         slider.addEventListener("dragstart", (event) => event.preventDefault());
+        const sliderImages = Array.from(slider.querySelectorAll("img"));
+
+        const snapSliderToNearest = () => {
+          if (!sliderImages.length) return;
+
+          const currentLeft = slider.scrollLeft;
+          let nearestOffset = sliderImages[0].offsetLeft;
+          let nearestDistance = Math.abs(currentLeft - nearestOffset);
+
+          sliderImages.forEach((image) => {
+            const distance = Math.abs(currentLeft - image.offsetLeft);
+            if (distance < nearestDistance) {
+              nearestDistance = distance;
+              nearestOffset = image.offsetLeft;
+            }
+          });
+
+          slider.scrollTo({
+            left: nearestOffset,
+            behavior: prefersReducedMotion ? "auto" : "smooth"
+          });
+        };
 
         if (finePointer) {
           let isPointerDown = false;
@@ -365,6 +387,7 @@
           let startScrollLeft = 0;
 
           const stopPointerDragging = () => {
+            if (isPointerDown) snapSliderToNearest();
             isPointerDown = false;
             slider.classList.remove("is-dragging");
           };
@@ -397,6 +420,7 @@
         let startScrollLeft = 0;
 
         const stopTouchDragging = () => {
+          if (isHorizontalDrag) snapSliderToNearest();
           isTouching = false;
           isHorizontalDrag = false;
           slider.classList.remove("is-dragging");
