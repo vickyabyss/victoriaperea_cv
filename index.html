@@ -359,27 +359,96 @@
       sliders.forEach((slider) => {
         slider.addEventListener("dragstart", (event) => event.preventDefault());
         const sliderImages = Array.from(slider.querySelectorAll("img"));
+        let activeSlideIndex = 0;
+        let sliderControls = null;
+        let prevSlideButton = null;
+        let nextSlideButton = null;
+        let chipButtons = [];
+        let scrollTicking = false;
 
-        const snapSliderToNearest = () => {
-          if (!sliderImages.length) return;
+        const clampSlideIndex = (index) => Math.min(sliderImages.length - 1, Math.max(0, index));
 
+        const getNearestSlideIndex = () => {
+          if (!sliderImages.length) return 0;
           const currentLeft = slider.scrollLeft;
-          let nearestOffset = sliderImages[0].offsetLeft;
-          let nearestDistance = Math.abs(currentLeft - nearestOffset);
+          let nearestIndex = 0;
+          let nearestDistance = Math.abs(currentLeft - sliderImages[0].offsetLeft);
 
-          sliderImages.forEach((image) => {
+          sliderImages.forEach((image, index) => {
             const distance = Math.abs(currentLeft - image.offsetLeft);
             if (distance < nearestDistance) {
               nearestDistance = distance;
-              nearestOffset = image.offsetLeft;
+              nearestIndex = index;
             }
           });
 
-          slider.scrollTo({
-            left: nearestOffset,
-            behavior: prefersReducedMotion ? "auto" : "smooth"
+          return nearestIndex;
+        };
+
+        const updateSliderControls = () => {
+          if (!sliderControls) return;
+          const nearestIndex = getNearestSlideIndex();
+          activeSlideIndex = nearestIndex;
+          prevSlideButton.disabled = nearestIndex === 0;
+          nextSlideButton.disabled = nearestIndex === sliderImages.length - 1;
+
+          chipButtons.forEach((chip, index) => {
+            const isActive = index === nearestIndex;
+            chip.classList.toggle("is-active", isActive);
+            chip.setAttribute("aria-current", isActive ? "true" : "false");
           });
         };
+
+        const goToSlide = (targetIndex, behavior = "smooth") => {
+          if (!sliderImages.length) return;
+          const index = clampSlideIndex(targetIndex);
+          activeSlideIndex = index;
+          slider.scrollTo({
+            left: sliderImages[index].offsetLeft,
+            behavior: prefersReducedMotion ? "auto" : behavior
+          });
+          updateSliderControls();
+        };
+
+        const snapSliderToNearest = () => {
+          if (!sliderImages.length) return;
+          goToSlide(getNearestSlideIndex(), "smooth");
+        };
+
+        if (!finePointer && sliderImages.length > 1) {
+          sliderControls = document.createElement("div");
+          sliderControls.className = "slider-controls";
+
+          prevSlideButton = document.createElement("button");
+          prevSlideButton.type = "button";
+          prevSlideButton.className = "slider-arrow slider-arrow--prev";
+          prevSlideButton.setAttribute("aria-label", "Previous image");
+          prevSlideButton.textContent = "←";
+          prevSlideButton.addEventListener("click", () => goToSlide(activeSlideIndex - 1));
+
+          nextSlideButton = document.createElement("button");
+          nextSlideButton.type = "button";
+          nextSlideButton.className = "slider-arrow slider-arrow--next";
+          nextSlideButton.setAttribute("aria-label", "Next image");
+          nextSlideButton.textContent = "→";
+          nextSlideButton.addEventListener("click", () => goToSlide(activeSlideIndex + 1));
+
+          const chipsGroup = document.createElement("div");
+          chipsGroup.className = "slider-chips";
+
+          chipButtons = sliderImages.map((_, index) => {
+            const chip = document.createElement("button");
+            chip.type = "button";
+            chip.className = "slider-chip";
+            chip.setAttribute("aria-label", `Go to image ${index + 1}`);
+            chip.addEventListener("click", () => goToSlide(index));
+            chipsGroup.appendChild(chip);
+            return chip;
+          });
+
+          sliderControls.append(prevSlideButton, chipsGroup, nextSlideButton);
+          slider.insertAdjacentElement("afterend", sliderControls);
+        }
 
         if (finePointer) {
           let isPointerDown = false;
@@ -468,6 +537,21 @@
 
         slider.addEventListener("touchend", stopTouchDragging);
         slider.addEventListener("touchcancel", stopTouchDragging);
+
+        slider.addEventListener(
+          "scroll",
+          () => {
+            if (!sliderControls || scrollTicking) return;
+            scrollTicking = true;
+            requestAnimationFrame(() => {
+              updateSliderControls();
+              scrollTicking = false;
+            });
+          },
+          { passive: true }
+        );
+
+        updateSliderControls();
       });
 
       const syncHeaderState = () => {
