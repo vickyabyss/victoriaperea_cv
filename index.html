@@ -357,6 +357,8 @@
       const heroTitle = document.querySelector(".hero-title");
 
       sliders.forEach((slider) => {
+        if (!finePointer) return;
+
         let isPointerDown = false;
         let startX = 0;
         let startScrollLeft = 0;
