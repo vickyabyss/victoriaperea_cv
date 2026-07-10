@@ -49,7 +49,7 @@ img {
   display: block;
 }
 
-.reveal {
+.js-ready .reveal {
   --reveal-opacity: 0.01;
   --reveal-y: 20px;
   --reveal-scale: 0.994;
@@ -58,42 +58,35 @@ img {
   will-change: opacity, transform;
 }
 
-.reveal.is-visible {
+.js-ready .reveal.is-visible {
   opacity: 1;
   transform: translate3d(0, 0, 0) scale(1);
 }
 
-.section-title.reveal {
+.js-ready .section-title.reveal {
   --reveal-y: 18px;
   --reveal-scale: 0.996;
 }
 
-.project-images.reveal {
+.js-ready .project-images.reveal {
   --reveal-opacity: 0.12;
   --reveal-y: 34px;
   --reveal-scale: 0.988;
-  --reveal-clip-top: 7%;
-  --reveal-saturation: 0.965;
-  --reveal-brightness: 0.992;
-  clip-path: inset(var(--reveal-clip-top) 0 0 0);
-  filter: saturate(var(--reveal-saturation)) brightness(var(--reveal-brightness));
-  will-change: opacity, transform, clip-path, filter;
+  will-change: opacity, transform;
 }
 
-.project-images.reveal.is-visible {
+.js-ready .project-images.reveal.is-visible {
   opacity: 1;
   transform: translate3d(0, 0, 0) scale(1);
-  clip-path: inset(0 0 0 0);
-  filter: saturate(1) brightness(1);
 }
 
-.project-summary.reveal {
+.js-ready .project-summary.reveal {
   --reveal-opacity: 0.06;
   --reveal-y: 22px;
   --reveal-scale: 0.996;
 }
 
-.project-description.reveal {
+.js-ready .project-description.reveal {
   --reveal-opacity: 0.05;
   --reveal-y: 24px;
   --reveal-scale: 0.995;
