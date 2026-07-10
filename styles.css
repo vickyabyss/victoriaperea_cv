@@ -611,6 +611,63 @@ h1 {
 
 .slider-controls {
   display: none;
+  margin-top: 10px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.slider-arrow {
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--bg);
+  color: var(--black);
+  font: inherit;
+  font-size: 16px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  cursor: pointer;
+  transition:
+    background 180ms ease,
+    color 180ms ease,
+    border-color 180ms ease,
+    opacity 180ms ease;
+}
+
+.slider-arrow:disabled {
+  opacity: 0.38;
+  cursor: default;
+}
+
+.slider-chips {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+.slider-chip {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  border: 0;
+  padding: 0;
+  background: var(--gray);
+  cursor: pointer;
+  transition:
+    background 180ms ease,
+    transform 180ms ease;
+}
+
+.slider-chip.is-active {
+  width: 22px;
+  background: var(--black);
 }
 
 .project-meta {
@@ -1110,64 +1167,7 @@ h1 {
   }
 
   .slider-controls {
-    margin-top: 10px;
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-  }
-
-  .slider-arrow {
-    width: 36px;
-    height: 36px;
-    border-radius: 999px;
-    border: 1px solid var(--line);
-    background: var(--bg);
-    color: var(--black);
-    font: inherit;
-    font-size: 16px;
-    line-height: 1;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0;
-    cursor: pointer;
-    transition:
-      background 180ms ease,
-      color 180ms ease,
-      border-color 180ms ease,
-      opacity 180ms ease;
-  }
-
-  .slider-arrow:disabled {
-    opacity: 0.38;
-    cursor: default;
-  }
-
-  .slider-chips {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .slider-chip {
-    width: 8px;
-    height: 8px;
-    border-radius: 999px;
-    border: 0;
-    padding: 0;
-    background: var(--gray);
-    cursor: pointer;
-    transition:
-      background 180ms ease,
-      transform 180ms ease;
-  }
-
-  .slider-chip.is-active {
-    width: 22px;
-    background: var(--black);
   }
 
   .pill-link {
@@ -1281,6 +1281,10 @@ h1 {
   .cursor-lens,
   .cursor-badge {
     display: none;
+  }
+
+  .slider-controls {
+    display: flex;
   }
 
   /* iOS Safari: avoid transformed/clipped overflow containers for touch swipe */

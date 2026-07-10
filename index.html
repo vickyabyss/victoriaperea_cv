@@ -415,7 +415,7 @@
           goToSlide(getNearestSlideIndex(), "smooth");
         };
 
-        if (!finePointer && sliderImages.length > 1) {
+        if (sliderImages.length > 1) {
           sliderControls = document.createElement("div");
           sliderControls.className = "slider-controls";
 
