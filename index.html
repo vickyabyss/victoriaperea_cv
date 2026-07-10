@@ -357,36 +357,93 @@
       const heroTitle = document.querySelector(".hero-title");
 
       sliders.forEach((slider) => {
-        if (!finePointer) return;
+        slider.addEventListener("dragstart", (event) => event.preventDefault());
 
-        let isPointerDown = false;
+        if (finePointer) {
+          let isPointerDown = false;
+          let startX = 0;
+          let startScrollLeft = 0;
+
+          const stopPointerDragging = () => {
+            isPointerDown = false;
+            slider.classList.remove("is-dragging");
+          };
+
+          slider.addEventListener("pointerdown", (event) => {
+            isPointerDown = true;
+            slider.classList.add("is-dragging");
+            slider.setPointerCapture(event.pointerId);
+            startX = event.pageX;
+            startScrollLeft = slider.scrollLeft;
+          });
+
+          slider.addEventListener("pointerup", stopPointerDragging);
+          slider.addEventListener("pointercancel", stopPointerDragging);
+
+          slider.addEventListener("pointermove", (event) => {
+            if (!isPointerDown) return;
+            event.preventDefault();
+            const walk = (event.pageX - startX) * 1.15;
+            slider.scrollLeft = startScrollLeft - walk;
+          });
+
+          return;
+        }
+
+        let isTouching = false;
+        let isHorizontalDrag = false;
         let startX = 0;
+        let startY = 0;
         let startScrollLeft = 0;
 
-        const stopDragging = () => {
-          isPointerDown = false;
+        const stopTouchDragging = () => {
+          isTouching = false;
+          isHorizontalDrag = false;
           slider.classList.remove("is-dragging");
         };
 
-        slider.addEventListener("dragstart", (event) => event.preventDefault());
-
-        slider.addEventListener("pointerdown", (event) => {
-          isPointerDown = true;
-          slider.classList.add("is-dragging");
-          slider.setPointerCapture(event.pointerId);
-          startX = event.pageX;
+        slider.addEventListener("touchstart", (event) => {
+          if (event.touches.length !== 1) return;
+          const touch = event.touches[0];
+          isTouching = true;
+          isHorizontalDrag = false;
+          startX = touch.pageX;
+          startY = touch.pageY;
           startScrollLeft = slider.scrollLeft;
         });
 
-        slider.addEventListener("pointerup", stopDragging);
-        slider.addEventListener("pointercancel", stopDragging);
+        slider.addEventListener(
+          "touchmove",
+          (event) => {
+            if (!isTouching || event.touches.length !== 1) return;
 
-        slider.addEventListener("pointermove", (event) => {
-          if (!isPointerDown) return;
-          event.preventDefault();
-          const walk = (event.pageX - startX) * 1.15;
-          slider.scrollLeft = startScrollLeft - walk;
-        });
+            const touch = event.touches[0];
+            const deltaX = touch.pageX - startX;
+            const deltaY = touch.pageY - startY;
+
+            if (!isHorizontalDrag) {
+              const absX = Math.abs(deltaX);
+              const absY = Math.abs(deltaY);
+
+              if (absX > 8 && absX > absY) {
+                isHorizontalDrag = true;
+                slider.classList.add("is-dragging");
+              } else if (absY > 8 && absY > absX) {
+                isTouching = false;
+                return;
+              } else {
+                return;
+              }
+            }
+
+            event.preventDefault();
+            slider.scrollLeft = startScrollLeft - deltaX;
+          },
+          { passive: false }
+        );
+
+        slider.addEventListener("touchend", stopTouchDragging);
+        slider.addEventListener("touchcancel", stopTouchDragging);
       });
 
       const syncHeaderState = () => {
